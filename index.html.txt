@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイ・ソーシャル・ハブ (自由研究)</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #f0f2f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap; /* iPadの縦向き時は縦並び、横向き時は横並びになります */
+        }
+        .box {
+            flex: 1;
+            min-width: 320px; /* 画面が狭くても崩れないように調整 */
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+        }
+        p {
+            font-size: 13px;
+            color: #666;
+        }
+        iframe {
+            width: 100%;
+            height: 350px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        input {
+            width: 60%;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        /* お気に入りリストのスタイル */
+        .fav-list {
+            margin-top: 12px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .fav-btn {
+            background-color: #28a745;
+            font-size: 13px;
+            padding: 6px 10px;
+        }
+        .fav-btn:hover {
+            background-color: #218838;
+        }
+        /* X用のボタンスタイル */
+        .x-btn {
+            background-color: #1da1f2;
+        }
+        .x-btn:hover {
+            background-color: #0d8bd9;
+        }
+        /* iPad用のスクロール枠調整 */
+        .x-scroll-box {
+            height: 350px; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; /* iPadでのスクロールをなめらかにする設定 */
+            margin-top: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📱 自由研究：マイ・ソーシャル・ハブ</h1>
+    
+    <div class="container">
+        <!-- YouTube エリア -->
+        <div class="box">
+            <h2>📺 YouTubeを見る</h2>
+            <p>動画の「共有」URL、または動画IDを入力してね</p>
+            
+            <input type="text" id="ytUrl" placeholder="例: https://youtu.be または 動画ID">
+            <button onclick="loadYouTube()">表示</button>
+
+            <!-- お気に入りリンク -->
+            <div class="fav-list">
+                <span style="font-weight: bold; width: 100%; font-size: 13px; color: #555;">🌟 お気に入り:</span>
+                <button class="fav-btn" onclick="playFav('dQw4w9WgXcQ')">🎵 音楽</button>
+                <button class="fav-btn" onclick="playFav('fwtKvjWe_aE')">😎 HIKAKIN</button>
+                <button class="fav-btn" onclick="playFav('G_kU7SbeunA')">💡 QuizKnock</button>
+            </div>
+
+            <div id="ytContainer">
+                <iframe id="ytPlayer" src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- X (Twitter) エリア -->
+        <div class="box">
+            <h2>🐦 X (Twitter) を見る</h2>
+            <p>見たいアカウントのボタンを押してね</p>
+            
+            <!-- Xのアカウント切り替えボタン -->
+            <div class="fav-list" style="margin-top: 0;">
+                <button class="fav-btn x-btn" onclick="changeX('Nintendo')">🎮 任天堂</button>
+                <button class="fav-btn x-btn" onclick="changeX('famitsu')">📰 ファミ通</button>
+                <button class="fav-btn x-btn" onclick="changeX('mextjapan')">🏫 文科省</button>
+            </div>
+
+            <div id="xContainer" class="x-scroll-box">
+                <!-- ここにXのタイムラインが動的に入ります -->
+                <a class="twitter-timeline" href="https://twitter.com">Tweets</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Xのリアルタイム読み込みに必要なスクリプト -->
+    <script async src="https://twitter.com" charset="utf-8"></script>
+
+    <script>
+        // YouTube再生関数（iPad用にバグを完全に修正しました）
+        function loadYouTube() {
+            const input = document.getElementById('ytUrl').value.trim();
+            let videoId = input;
+
+            if (input.includes('v=')) {
+                videoId = input.split('v=')[1].split('&')[0];
+            } else if (input.includes('youtu.be/')) {
+                videoId = input.split('youtu.be/')[1].split('?')[0];
+            }
+
+            if (videoId) {
+                const player = document.getElementById('ytPlayer');
+                player.src = `https://youtube.com${videoId}`;
+            } else {
+                alert('正しいURLまたは動画IDを入力してください。');
+            }
+        }
+
+        // YouTubeお気に入り用
+        function playFav(id) {
+            document.getElementById('ytUrl').value = id;
+            loadYouTube();
+        }
+
+        // Xの表示アカウントを切り替える関数
+        function changeX(screenName) {
+            const container = document.getElementById('xContainer');
+            container.innerHTML = `<a class="twitter-timeline" href="https://twitter.com{screenName}?ref_src=twsrc%5Etfw">Tweets by ${screenName}</a>`;
+            
+            if (window.twttr && window.twttr.widgets) {
+                window.twttr.widgets.load(container);
+            }
+        }
+    </script>
+</body>
+</html>
